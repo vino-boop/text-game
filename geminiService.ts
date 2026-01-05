@@ -2,15 +2,8 @@
 import { GoogleGenAI } from "@google/genai";
 import { Region } from "./types";
 
-/**
- * Creates a fresh GoogleGenAI instance using the current environment's API key.
- * This ensures we always use the latest key selected by the user.
- */
 const getAI = () => new GoogleGenAI({ apiKey: process.env.API_KEY });
 
-/**
- * Generates an atmospheric narrative description based on the current game stage and player stats.
- */
 export async function generateNarrative(stage: Region, lucidity: number, vocabulary: number): Promise<string> {
   const ai = getAI();
   const modelName = 'gemini-3-pro-preview';
@@ -51,31 +44,4 @@ export async function generateNarrative(stage: Region, lucidity: number, vocabul
     console.error("Gemini narrative error:", error);
     return "由于逻辑崩落，描述已失效。";
   }
-}
-
-/**
- * Generates an eldritch enemy with a name and description using JSON response mode.
- */
-export async function generateEnemyDescription(region: Region): Promise<{ name: string, description: string }> {
-    const ai = getAI();
-    const prompt = `为区域 ${region} 生成一个不可名状的敌人的名称和简短描述（100字内）。格式为 JSON: { "name": "...", "description": "..." }`;
-    
-    try {
-        const response = await ai.models.generateContent({
-            model: 'gemini-3-flash-preview',
-            contents: prompt,
-            config: {
-                responseMimeType: "application/json"
-            }
-        });
-        // Correctly using .text property for string extraction
-        const data = JSON.parse(response.text || "{}");
-        return {
-            name: data.name || "失真体",
-            description: data.description || "一个正在剥离现实定义的块状物。"
-        };
-    } catch (error) {
-        console.error("Gemini enemy generation error:", error);
-        return { name: "无名者", description: "它没有定义，它甚至不存在于此。" };
-    }
 }

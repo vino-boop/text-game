@@ -30,6 +30,12 @@
                 transparent 2px
             );
             pointer-events: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
         }
         @keyframes scanline {
             0% { transform: translateY(-100%); }
@@ -41,6 +47,22 @@
             background: linear-gradient(to bottom, transparent, rgba(255, 0, 0, 0.05), transparent);
             position: absolute;
             animation: scanline 8s linear infinite;
+            z-index: 100;
+            pointer-events: none;
+        }
+        
+        /* 增加全局的灰暗感和噪点 */
+        body::after {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('https://www.transparenttextures.com/patterns/carbon-fibre.png');
+            opacity: 0.03;
+            pointer-events: none;
+            z-index: 1000;
         }
     </style>
 <script type="importmap">

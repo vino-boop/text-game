@@ -8,6 +8,8 @@ export enum GameState {
   COMBAT = '逻辑博弈',
   SHOP = '真理黑市',
   REST = '逻辑篝火',
+  ROLLER = '逻辑重塑',
+  TREASURE = '认知秘宝',
   GAMEOVER = '现实崩塌',
   VICTORY = '抵达彼岸'
 }
@@ -34,7 +36,7 @@ export interface MapNode {
   y: number;
   isRevealed: boolean;
   neighborMines: number;
-  content: 'EVENT' | 'SHOP' | 'REST' | 'NONE';
+  content: 'EVENT' | 'SHOP' | 'REST' | 'ROLLER' | 'TREASURE' | 'NONE';
 }
 
 export interface WordCard {
@@ -44,14 +46,15 @@ export interface WordCard {
   power: number;
   isCursed?: boolean;
   cost?: number;
+  isMerged?: boolean; 
 }
 
 export interface TagItem {
   id: string;
   name: string;
   description: string;
-  isConsumable: boolean;
-  effect: (stats: GameStats, enemy: Enemy | null) => { stats: GameStats; enemy: Enemy | null; log: string };
+  rarity: 'COMMON' | 'DIVINE';
+  effect?: (stats: GameStats, enemy: Enemy | null) => { stats: GameStats; enemy: Enemy | null; log: string };
 }
 
 export interface GameStats {
@@ -67,6 +70,7 @@ export interface GameStats {
   discoveredCombos: string[];
   stage: Region;
   nodesCleared: number;
+  accumulatedDanger: number; 
   tags: string[]; 
   hasRevival?: boolean;
   currentPos: { x: number, y: number };
@@ -77,13 +81,15 @@ export interface Enemy {
   description: string;
   hp: number;
   maxHp: number;
-  correction: number; // 逻辑修正值 (0-100)
+  correction: number;
   maxCorrection: number; 
   attack: number;
   logicDistortion: number;
   burn: number;
   intent?: EnemyIntent;
   tags?: string[];
+  turnCount?: number;
+  isBoss?: boolean; // New flag to control lucidity reduction
 }
 
 export interface ComboEffect {
@@ -96,9 +102,11 @@ export interface GameEvent {
   id: string;
   title: string;
   description: string;
+  requirements?: string[]; // Trigger only if player has one of these words
   options: {
     label: string;
     action: (stats: GameStats) => { stats: GameStats; log: string; nextState?: GameState };
+    requiredWord?: string; // Specific option may require a word
   }[];
 }
 
